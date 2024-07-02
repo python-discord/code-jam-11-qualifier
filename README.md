@@ -9,7 +9,7 @@ Please read the rules and instructions carefully, and submit your solution befor
 
 - [Qualifying for the Code Jam](#qualifying-for-the-code-jam)
 - [Rules and Guidelines](#rules-and-guidelines)
-- [Qualifier Assignment: Image Unscrambling](#qualifier-assignment-quote-immortalizer)
+- [Qualifier Assignment: Quote Immortalizer](#qualifier-assignment-quote-immortalizer)
 
 
 # Qualifying for the Code Jam
