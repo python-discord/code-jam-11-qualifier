@@ -148,7 +148,7 @@ class Database:
 
     @classmethod
     def add_quote(cls, quote) -> None:
-        "Adds a quote. Will raise a `ValueError` if an error occurs."
+        "Adds a quote. Will raise a `DuplicateError` if an error occurs."
         if str(quote) in cls.quotes:
             raise DuplicateError
         cls.quotes.append(quote)
