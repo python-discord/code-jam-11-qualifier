@@ -50,7 +50,7 @@ Below we go through each command and what they need to implement and consider.
 
 - A valid `quote` command will have the following formation: `quote "quote goes here"`
     - The command should also support smart quotes: `quote “quote goes here”`
-    - You can rely that a valid, full quote will be surrounded by an opening and closing quotation mark, the quote is whatever is captured within that. The quote will only use spaces for whitepsace.
+    - You can rely that a valid, full quote will be surrounded by an opening and closing quotation mark, the quote is whatever is captured within that. The quote will only use spaces for whitespace.
     - Quotes cannot be longer than 50 characters. A `ValueError`  with the following message `"Quote is too long"` should be raised if one that is added is longer than 50 characters.
         - You may ask why the length limit? To keep things WebScale™️ of course!
         - Also, “Brevity is the soul of wit”
@@ -95,7 +95,7 @@ There are 2 variants to support: uwu and piglatin. They will be given as subcomm
 
 ### **The Task**
 
-We would like you to complete the `Quote`class that will contain the relevant information. You must implement the `__str__` dunder for the Quote class and the `_create_variant` method.
+We would like you to complete the `Quote` class that will contain the relevant information. You must implement the `__str__` dunder for the Quote class and the `_create_variant` method.
 
 You also will be responsible for writing the `run_command` function and ensure the function can complete what the docstring states.
 
