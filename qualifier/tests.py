@@ -120,14 +120,13 @@ class TestQuoteCreation(unittest.TestCase):
 
         expected_output = "Quote has already been added previously\n"
 
-        captured_ouput = io.StringIO()
-        sys.stdout = captured_ouput
+        captured_output = io.StringIO()
+        sys.stdout = captured_output
 
         qualifier.run_command(f'quote "{test_case}"')
         qualifier.run_command(f'quote "{test_case}"')
 
-        output = captured_ouput.getvalue()
-        print(output)
+        output = captured_output.getvalue()
         self.assertEqual(output, expected_output)
 
         sys.stdout = sys.__stdout__
@@ -166,6 +165,20 @@ class TestQuoteCreation(unittest.TestCase):
         added_quote = qualifier.Database.quotes[-1]
         self.assertIsInstance(added_quote.mode, qualifier.VariantMode)
         self.assertEqual(added_quote.mode, "uwu")
+
+    def test_create_variant_implemented(self):
+        quote = qualifier.Quote("Code golfers beware", qualifier.VariantMode.NORMAL)
+        test_cases = (
+            (qualifier.VariantMode.NORMAL, "Code golfers beware"),
+            (qualifier.VariantMode.UWU, "Code gowfews bewawe"),
+            (qualifier.VariantMode.PIGLATIN, "Odecay olfersgay ewarebay")
+        )
+
+        self.assertTrue(hasattr(qualifier.Quote, '_create_variant'))
+
+        for mode, variant_result in test_cases:
+            quote.mode = mode
+            self.assertEqual(quote._create_variant(), variant_result)
 
 
 if __name__ == "__main__":
