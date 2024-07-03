@@ -105,12 +105,12 @@ class TestQuoteCreation(unittest.TestCase):
 
         expected_output = "Quote has already been added previously\n"
 
-        captured_ouput = io.StringIO()
-        sys.stdout = captured_ouput
+        captured_output = io.StringIO()
+        sys.stdout = captured_output
 
         qualifier.run_command(f'quote "{test_case}"')
 
-        output = captured_ouput.getvalue()
+        output = captured_output.getvalue()
         self.assertEqual(output, expected_output)
 
         sys.stdout = sys.__stdout__
@@ -142,12 +142,12 @@ class TestQuoteCreation(unittest.TestCase):
 
         correct = f"- {"\n- ".join(quotes)}\n"
 
-        captured_ouput = io.StringIO()
-        sys.stdout = captured_ouput
+        captured_output = io.StringIO()
+        sys.stdout = captured_output
 
         qualifier.run_command("quote list")
 
-        output = captured_ouput.getvalue()
+        output = captured_output.getvalue()
         self.assertEqual(output, correct)
 
         sys.stdout = sys.__stdout__
