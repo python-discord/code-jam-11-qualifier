@@ -95,7 +95,7 @@ There are 2 variants to support: uwu and piglatin. They will be given as subcomm
 
 ### **The Task**
 
-We would like you to complete the `Quote` class that will contain the relevant information. You must implement the `__str__` dunder for the Quote class and the `_create_variant` method.
+We would like you to complete the `Quote` class that will contain the relevant information. You must implement the `__str__` dunder for the `Quote` class and the `_create_variant` method.
 
 You also will be responsible for writing the `run_command` function and ensure the function can complete what the docstring states.
 
