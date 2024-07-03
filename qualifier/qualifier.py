@@ -24,9 +24,9 @@ class Quote:
     def __str__(self) -> str:
         ...
 
-    def create_variant(self) -> None:
+    def _create_variant(self) -> str:
         """
-        Transforms the quote to the appropriate variant indicated by `self.mode`
+        Transforms the quote to the appropriate variant indicated by `self.mode` and returns the result
         """
 
 
@@ -47,7 +47,7 @@ def run_command(command: str) -> None:
 # The code below is available for you to use
 # You do not need to implement it, you can assume it will work as specified
 class Database:
-    quotes: list["Quotes"] = []
+    quotes: list["Quote"] = []
 
     @classmethod
     def get_quotes(cls) -> list[str]:

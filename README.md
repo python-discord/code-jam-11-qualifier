@@ -44,7 +44,7 @@ The quote immortalizer will have 4 commands you need to implement:
 - `quote`
 - `quote uwu`
 - `quote piglatin`
-- `quite list`
+- `quote list`
 
 Below we go through each command and what they need to implement and consider.
 
@@ -88,14 +88,14 @@ There are 2 variants to support: uwu and piglatin. They will be given as subcomm
         - "pig" → "igpay", "latin" → "atinlay"
         - "friends" → "iendsfray"
         - "eat" → "eatway"
-    - Your program should be able to piglatin a quote regardless if it is lower case or uppet case
+    - Your program should be able to piglatin a quote regardless if it is lower case or upper case
     - After the quote is tranformed it should Sentence Case the quote (first letter of the first word is capitalized)
     - Do not transform any words if the entire quote cannot be transformed
     - If no words can be transformed, raise a `ValueError` error with the following message `"Quote was not modified"`.
 
 ### **The Task**
 
-We would like you to complete the `Quote`class that will contain the relevant information. You must implement the `__str__` dunder for the Quote class and the `create_variant` method.
+We would like you to complete the `Quote`class that will contain the relevant information. You must implement the `__str__` dunder for the Quote class and the `_create_variant` method.
 
 You also will be responsible for writing the `run_command` function and ensure the function can complete what the docstring states.
 
@@ -108,9 +108,9 @@ class Quote:
     def __str__(self) -> str:
         ...
    
-    def create_variant(self) -> None:
+    def _create_variant(self) -> str:
         """
-        Transforms the quote to the appropriate variant indicated by `self.mode`
+        Transforms the quote to the appropriate variant indicated by `self.mode` and returns the result
         """
 
 def run_command(command: str) -> None:
@@ -142,7 +142,7 @@ class DuplicateError(Exception):
 
 
 class Database:
-    quotes: list["Quotes"] = []
+    quotes: list["Quote"] = []
 
     @classmethod
     def get_quotes(cls) -> list[str]:

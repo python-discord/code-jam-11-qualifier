@@ -97,7 +97,7 @@ class TestQuoteCreation(unittest.TestCase):
             with self.subTest(command=command):
                 with self.assertRaises(ValueError) as exc:
                     qualifier.run_command(command)
-                self.assertEqual("Invalid Command", str(exc.exception))
+                self.assertEqual("Invalid command", str(exc.exception))
 
     def test_database_error(self):
         test_case = "African or European swallow?"
