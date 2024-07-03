@@ -177,8 +177,9 @@ class TestQuoteCreation(unittest.TestCase):
         self.assertTrue(hasattr(qualifier.Quote, '_create_variant'))
 
         for mode, variant_result in test_cases:
-            quote.mode = mode
-            self.assertEqual(quote._create_variant(), variant_result)
+            with self.subTest(mode=mode, variant_result=variant_result):
+                quote.mode = mode
+                self.assertEqual(quote._create_variant(), variant_result)
 
 
 if __name__ == "__main__":
