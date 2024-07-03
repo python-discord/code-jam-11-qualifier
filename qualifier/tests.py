@@ -7,20 +7,20 @@ import qualifier
 
 class TestQuoteCreation(unittest.TestCase):
 
-    def tearDown(self):
-        qualifier.Database = Database
+    def setUp(self):
         qualifier.Database.quotes = []
 
     def test_normal_quote(self):
         test_cases = [
-            "Hello World Hello World Hello World Hello World He",
-            "Rubber Duck Debugging is best",
-            "a"
+            "Help! Help! I'm being repressed",
+            "That rabbit's dynamite",
+            "A scratch?"
         ]
 
         for test in test_cases:
-            qualifier.run_command(f"quote \"{test}\"")
-            self.assertEqual(str(qualifier.Database.quotes[-1]), test)
+            with self.subTest(test=test):
+                qualifier.run_command(f"quote \"{test}\"")
+                self.assertEqual(str(qualifier.Database.quotes[-1]), test)
 
     def test_normal_too_long(self):
         test_case = "aaaaaaaaaaaaaaAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
@@ -30,7 +30,7 @@ class TestQuoteCreation(unittest.TestCase):
         self.assertEqual("Quote is too long", str(exc.exception))
 
     def test_smart_quotes(self):
-        test_case = "when life gives you lemons"
+        test_case = "Knights who say Ni"
         qualifier.run_command(f'quote “{test_case}”')
         self.assertEqual(str(qualifier.Database.quotes[-1]), test_case)
 
@@ -57,21 +57,22 @@ class TestQuoteCreation(unittest.TestCase):
         self.assertEqual("Quote is too long", str(exc.exception))
 
     def test_uwu_no_conversion(self):
-        test_case = "sphinx of diamond, see me now"
+        test_case = "Sphinx of diamond, see me now"
 
         with self.assertRaises(ValueError) as exc:
             qualifier.run_command(f'quote uwu "{test_case}"')
         self.assertEqual("Quote was not modified", str(exc.exception))
 
     def test_piglatin_quote(self):
-        test_case = "Invite our friends to brunch"
-        correct = "Inviteway ourway iendsfray otay unchbray"
+        test_case = "Tis but a scratch"
+        correct = "Istay utbay away atchscray"
 
         qualifier.run_command(f'quote piglatin "{test_case}"')
         self.assertEqual(str(qualifier.Database.quotes[-1]), correct)
 
     def test_piglatin_quote_too_long(self):
         test_case = "Bubble Bubble Boiling Trouble Witches Brew and Something Something"
+
         with self.assertRaises(ValueError) as exc:
             qualifier.run_command(f'quote piglatin "{test_case}"')
         self.assertEqual("Quote is too long", str(exc.exception))
@@ -80,24 +81,26 @@ class TestQuoteCreation(unittest.TestCase):
         test_case = "Perhaps it was a dark and stormy night"
 
         with self.assertRaises(ValueError) as exc:
-            with self.assertWarns(Warning) as wrn:
-                qualifier.run_command(f'quote piglatin "{test_case}"')
-            self.assertEqual("Quote would be too long, was not piglatin-ified", str(wrn.warning))
+            qualifier.run_command(f'quote piglatin "{test_case}"')
         self.assertEqual("Quote was not modified", str(exc.exception))
 
-    def test_do_nothing(self):
+    def test_invalid_command(self):
         test_case = "This sure looks like a quote"
-        qualifier.run_command(f'uwu {test_case}')
-        qualifier.run_command(f'piglatin {test_case}')
-        qualifier.run_command(f'{test_case}')
-        qualifier.run_command(f'quotes {test_case}')
+        invalid_commands = [
+            f'uwu {test_case}',
+            f'piglatin {test_case}',
+            test_case,
+            f'quotes {test_case}'
+        ]
 
-        print(qualifier.Database.quotes)
-
-        self.assertEqual(qualifier.Database.quotes, [])
+        for command in invalid_commands:
+            with self.subTest(command=command):
+                with self.assertRaises(ValueError) as exc:
+                    qualifier.run_command(command)
+                self.assertEqual("Invalid Command", str(exc.exception))
 
     def test_database_error(self):
-        test_case = "Hello World"
+        test_case = "African or European swallow?"
         qualifier.Database.quotes = [test_case]
 
         expected_output = "Quote has already been added previously\n"
@@ -108,6 +111,23 @@ class TestQuoteCreation(unittest.TestCase):
         qualifier.run_command(f'quote "{test_case}"')
 
         output = captured_ouput.getvalue()
+        self.assertEqual(output, expected_output)
+
+        sys.stdout = sys.__stdout__
+
+    def test_database_error_quote(self):
+        test_case = 'Nobody expects the Spanish Inquisition!'
+
+        expected_output = "Quote has already been added previously\n"
+
+        captured_ouput = io.StringIO()
+        sys.stdout = captured_ouput
+
+        qualifier.run_command(f'quote "{test_case}"')
+        qualifier.run_command(f'quote "{test_case}"')
+
+        output = captured_ouput.getvalue()
+        print(output)
         self.assertEqual(output, expected_output)
 
         sys.stdout = sys.__stdout__
@@ -133,25 +153,19 @@ class TestQuoteCreation(unittest.TestCase):
 
         sys.stdout = sys.__stdout__
 
+    def test_quote_instance(self):
+        test_case = 'Nobody expects the Spanish Inquisition!'
+        qualifier.run_command(f'quote "{test_case}"')
 
-class DuplicateError(Exception):
-    ...
+        self.assertIsInstance(qualifier.Database.quotes[-1], qualifier.Quote)
 
+    def test_variant_attribute(self):
+        test_case = 'Tis but a scratch'
+        qualifier.run_command(f'quote uwu "{test_case}"')
 
-class Database:
-    quotes = []
-
-    @classmethod
-    def get_quotes(cls) -> list[str]:
-        "Returns current quotes in a list"
-        return cls.quotes
-
-    @classmethod
-    def add_quote(cls, quote) -> None:
-        "Adds a quote. Will raise a `DuplicateError` if an error occurs."
-        if str(quote) in cls.quotes:
-            raise DuplicateError
-        cls.quotes.append(quote)
+        added_quote = qualifier.Database.quotes[-1]
+        self.assertIsInstance(added_quote.mode, qualifier.VariantMode)
+        self.assertEqual(added_quote.mode, "uwu")
 
 
 if __name__ == "__main__":

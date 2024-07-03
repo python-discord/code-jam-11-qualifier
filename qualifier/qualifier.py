@@ -12,16 +12,22 @@ class VariantMode(StrEnum):
 
 
 class DuplicateError(Exception):
-    ...
+    """Error raised when there is an attempt to add a duplicate entry to a database"""
 
 
-# Implement the class below
+# Implement the class and function below
 class Quote:
     def __init__(self, quote: str, mode: "VariantMode") -> None:
-        ...
+        self.quote = ...
+        self.mode = ...
 
     def __str__(self) -> str:
         ...
+
+    def create_variant(self) -> None:
+        """
+        Transforms the quote to the appropriate variant indicated by `self.mode`
+        """
 
 
 def run_command(command: str) -> None:
@@ -41,16 +47,16 @@ def run_command(command: str) -> None:
 # The code below is available for you to use
 # You do not need to implement it, you can assume it will work as specified
 class Database:
-    quotes = []
+    quotes: list["Quotes"] = []
 
     @classmethod
     def get_quotes(cls) -> list[str]:
         "Returns current quotes in a list"
-        return cls.quotes
+        return [str(quote) for quote in cls.quotes]
 
     @classmethod
     def add_quote(cls, quote: "Quote") -> None:
         "Adds a quote. Will raise a `DuplicateError` if an error occurs."
-        if str(quote) in cls.quotes:
+        if str(quote) in [str(quote) for quote in cls.quotes]:
             raise DuplicateError
         cls.quotes.append(quote)
