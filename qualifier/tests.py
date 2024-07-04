@@ -167,7 +167,7 @@ class TestQuoteCreation(unittest.TestCase):
         self.assertEqual(added_quote.mode, "uwu")
 
     def test_create_variant_implemented(self):
-        quote = qualifier.Quote("Code golfers beware", qualifier.VariantMode.NORMAL)
+        quote_str = "Code golfers beware"
         test_cases = (
             (qualifier.VariantMode.NORMAL, "Code golfers beware"),
             (qualifier.VariantMode.UWU, "Code gowfews bewawe"),
@@ -177,6 +177,7 @@ class TestQuoteCreation(unittest.TestCase):
         self.assertTrue(hasattr(qualifier.Quote, '_create_variant'))
 
         for mode, variant_result in test_cases:
+            quote = qualifier.Quote(quote_str, qualifier.VariantMode.NORMAL)
             with self.subTest(mode=mode, variant_result=variant_result):
                 quote.mode = mode
                 self.assertEqual(quote._create_variant(), variant_result)
