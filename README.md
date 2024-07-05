@@ -90,8 +90,7 @@ There are 2 variants to support: uwu and piglatin. They will be given as subcomm
         - "eat" → "eatway"
     - Your program should be able to piglatin a quote regardless if it is lower case or upper case
     - After the quote is tranformed it should Sentence Case the quote (first letter of the first word is capitalized)
-    - Do not transform any words if the entire quote cannot be transformed
-    - If no words can be transformed, raise a `ValueError` error with the following message `"Quote was not modified"`.
+    - If the quote would be too long after transforming it, do not transform it, and raise a `ValueError` error with the following message `"Quote was not modified"`.
 
 ### **The Task**
 
