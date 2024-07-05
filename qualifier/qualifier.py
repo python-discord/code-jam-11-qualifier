@@ -1,6 +1,7 @@
 import re
 from enum import auto, StrEnum
 import logging
+import warnings
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -28,6 +29,7 @@ class Quote:
     def __init__(self, quote: str, mode: "VariantMode") -> None:
         self.quote = quote
         self.mode = mode
+        self.processed = False
 
     def __str__(self) -> str:
         return self._create_variant()
@@ -36,13 +38,47 @@ class Quote:
         """
         Transforms the quote to the appropriate variant indicated by `self.mode` and returns the result
         """
-        return getattr(self, self.mode)()
+        if not self.processed:
+            self.quote = getattr(self, self.mode)()
+            self.processed = True
+        return self.quote
 
     def normal(self) -> str:
         return self.quote
 
     def uwu(self) -> str:
+        """
+        uwu-ify the quote and return the result
+        """
+
+        # L/l -→ W/w and R/r → W/w
+        quote = self.quote.translate(
+            str.maketrans({
+                'l': 'w',
+                'r': 'w',
+                'L': 'W',
+                'R': 'W',
+            })
+        )
+
+        quote_with_stutter_list = []
+        for word in quote.split(" "):
+            if word.lower().startswith("u"):
+                quote_with_stutter_list.append(f"{word[0]}-{word}")
+            else:
+                quote_with_stutter_list.append(word)
+        quote = " ".join(quote_with_stutter_list)
+
+        if len(quote) > MAX_QUOTE_LENGTH:
+            warnings.warn("Quote too long, only partially transformed")
+
+        if self.quote == quote:
+            raise ValueError("Quote was not modified")
+
+        self.quote = quote
         return self.quote
+
+
 
     def piglatin(self) -> str:
         return self.quote
