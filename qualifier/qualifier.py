@@ -21,13 +21,42 @@ class Quote:
         self.quote = ...
         self.mode = ...
 
-    def __str__(self) -> str:
-        ...
+    def __str__(self) -> str: ...
 
     def _create_variant(self) -> str:
         """
         Transforms the quote to the appropriate variant indicated by `self.mode` and returns the result
         """
+
+        if self.mode == "uwu":
+            uwu_translation = (
+                self.quote.replace("l", "w")
+                .replace("r", "w")
+                .replace("L", "W")
+                .replace("R", "W")
+            )
+
+            return uwu_translation
+        elif self.mode == "piglatin":
+            vowels: str = "AEIOUaeiou"
+            words: str = self.quote.split()
+            piglatin_words: list[str] = []
+
+            for word in words:
+                if word[0] in vowels:
+                    piglatin_word = word + "way"
+                else:
+                    for i, letter in enumerate(word):
+                        if letter in vowels:
+                            piglatin_word = word[i:] + word[:i] + "ay"
+                            break
+                    else:
+                        piglatin_word = word + "ay"
+                piglatin_words.append(piglatin_word)
+
+            return " ".join(piglatin_words)
+        else:
+            return self.quote
 
 
 def run_command(command: str) -> None:
