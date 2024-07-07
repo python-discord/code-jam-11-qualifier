@@ -140,7 +140,8 @@ class TestQuoteCreation(unittest.TestCase):
 
         qualifier.Database.quotes = quotes
 
-        correct = f"- {'n- '.join(quotes)}\n"
+        #correct = f"- {'\n- '.join(quotes)}\n"
+        correct = f"- {"\n- ".join(quotes)}\n"
 
         captured_output = io.StringIO()
         sys.stdout = captured_output
