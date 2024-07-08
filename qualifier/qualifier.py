@@ -18,29 +18,29 @@ class DuplicateError(Exception):
 # Implement the class and function below
 class Quote:
     def __init__(self, quote: str, mode: "VariantMode") -> None:
-        self.quote = ...
-        self.mode = ...
+        self.quote = quote
+        self.mode = mode
 
-    def __str__(self) -> str: ...
+    def __str__(self) -> str:
+        return self._create_variant()
 
     def _create_variant(self) -> str:
         """
         Transforms the quote to the appropriate variant indicated by `self.mode` and returns the result
         """
 
-        if self.mode == "uwu":
+        if self.mode == VariantMode.UWU:
             uwu_translation = (
                 self.quote.replace("l", "w")
                 .replace("r", "w")
                 .replace("L", "W")
                 .replace("R", "W")
             )
-
             return uwu_translation
-        elif self.mode == "piglatin":
-            vowels: str = "AEIOUaeiou"
-            words: str = self.quote.split()
-            piglatin_words: list[str] = []
+        elif self.mode == VariantMode.PIGLATIN:
+            vowels = "AEIOUaeiou"
+            words = self.quote.split()
+            piglatin_words = []
 
             for word in words:
                 if word[0] in vowels:
@@ -51,7 +51,7 @@ class Quote:
                             piglatin_word = word[i:] + word[:i] + "ay"
                             break
                     else:
-                        piglatin_word = word + "ay"
+                        piglatin_word = word + "ay"  # For words without vowels
                 piglatin_words.append(piglatin_word)
 
             return " ".join(piglatin_words)
@@ -70,7 +70,22 @@ def run_command(command: str) -> None:
         - `quote list` - print a formatted string that lists the current
            quotes to be displayed in discord flavored markdown
     """
-    ...
+    command_items = command.split(maxsplit=2)
+
+    if len(command_items) < 2:
+        print("Invalid command")
+        return
+
+    # Break up commmand in to 2 parts: action (i.e quote) and text (i.e "My quote")
+    action = command_items[1]
+    quote_text = command_items[2] if len(command_items) > 2 else ""
+
+    if action == "list":
+        # Retrieve quotes via 'Database' fetch
+        quotes = Database.get_quotes()
+
+        for i, quote in enumerate(quotes):
+            print(f"{id}=> {quote}")
 
 
 # The code below is available for you to use
