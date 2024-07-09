@@ -30,13 +30,34 @@ class Quote:
         """
 
         if self.mode == VariantMode.UWU:
-            uwu_translation = (
+            transformed = (
                 self.quote.replace("l", "w")
                 .replace("r", "w")
                 .replace("L", "W")
                 .replace("R", "W")
             )
-            return uwu_translation
+
+            words = transformed.split()
+            for i, word in enumerate(words):
+                if word.lower().startswith("u"):
+                    words[i] = f"{word[0]}-{word}"
+
+            transformed = " ".join(words)
+
+            if len(transformed) > MAX_QUOTE_LENGTH:
+                transformed = (
+                    self.quote.replace("l", "w")
+                    .replace("r", "w")
+                    .replace("L", "W")
+                    .replace("R", "W")
+                )
+                raise ValueError("Quote too long, only partially transformed")
+
+            if transformed == self.quote:
+                raise ValueError("Quote was not modified")
+
+            return transformed
+
         elif self.mode == VariantMode.PIGLATIN:
             vowels = "AEIOUaeiou"
             words = self.quote.split()
@@ -54,7 +75,13 @@ class Quote:
                         piglatin_word = word + "ay"  # For words without vowels
                 piglatin_words.append(piglatin_word)
 
-            return " ".join(piglatin_words)
+            transformed = " ".join(piglatin_words).capitalize()
+
+            if len(transformed) > MAX_QUOTE_LENGTH:
+                raise ValueError("Quote was not modified")
+
+            return transformed
+
         else:
             return self.quote
 
@@ -70,22 +97,43 @@ def run_command(command: str) -> None:
         - `quote list` - print a formatted string that lists the current
            quotes to be displayed in discord flavored markdown
     """
-    command_items = command.split(maxsplit=2)
+    command_parts = command.split(maxsplit=2)
+    if len(command_parts) < 2:
+        raise ValueError("Invalid command")
 
-    if len(command_items) < 2:
-        print("Invalid command")
-        return
-
-    # Break up commmand in to 2 parts: action (i.e quote) and text (i.e "My quote")
-    action = command_items[1]
-    quote_text = command_items[2] if len(command_items) > 2 else ""
+    action = command_parts[1]
+    quote_text = command_parts[2] if len(command_parts) > 2 else ""
 
     if action == "list":
-        # Retrieve quotes via 'Database' fetch
         quotes = Database.get_quotes()
+        for quote in quotes:
+            print(f"- {quote}")
+        return
 
-        for i, quote in enumerate(quotes):
-            print(f"{id}=> {quote}")
+    if len(quote_text) > MAX_QUOTE_LENGTH:
+        raise ValueError("Quote is too long")
+
+    mode = VariantMode.NORMAL
+    if action == "uwu":
+        mode = VariantMode.UWU
+    elif action == "piglatin":
+        mode = VariantMode.PIGLATIN
+
+    quote = Quote(quote_text, mode)
+    transformed_quote = str(quote)
+
+    if action in ["uwu", "piglatin"]:
+        if transformed_quote == quote_text:
+            raise ValueError("Quote was not modified")
+        if len(transformed_quote) > MAX_QUOTE_LENGTH:
+            transformed_quote = transformed_quote[:MAX_QUOTE_LENGTH]
+            raise ValueError("Quote too long, only partially transformed")
+
+    try:
+        Database.add_quote(quote)
+        print(f"Added quote: {transformed_quote}")
+    except DuplicateError:
+        print("Quote has already been added previously")
 
 
 # The code below is available for you to use
