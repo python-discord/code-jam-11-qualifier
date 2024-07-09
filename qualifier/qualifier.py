@@ -1,4 +1,6 @@
 from enum import auto, StrEnum
+import warnings
+import sys
 
 MAX_QUOTE_LENGTH = 50
 
@@ -45,13 +47,8 @@ class Quote:
             transformed = " ".join(words)
 
             if len(transformed) > MAX_QUOTE_LENGTH:
-                transformed = (
-                    self.quote.replace("l", "w")
-                    .replace("r", "w")
-                    .replace("L", "W")
-                    .replace("R", "W")
-                )
-                raise ValueError("Quote too long, only partially transformed")
+                warnings.warn("Quote too long, only partially transformed", Warning)
+                return transformed[:MAX_QUOTE_LENGTH]
 
             if transformed == self.quote:
                 raise ValueError("Quote was not modified")
@@ -97,37 +94,50 @@ def run_command(command: str) -> None:
         - `quote list` - print a formatted string that lists the current
            quotes to be displayed in discord flavored markdown
     """
-    command_parts = command.split(maxsplit=2)
-    if len(command_parts) < 2:
+
+    command_parts = command.split(maxsplit=1)
+    if len(command_parts) < 1:
         raise ValueError("Invalid command")
 
-    action = command_parts[1]
-    quote_text = command_parts[2] if len(command_parts) > 2 else ""
-
+    action = command_parts[0]
     if action == "list":
         quotes = Database.get_quotes()
         for quote in quotes:
             print(f"- {quote}")
         return
 
-    if len(quote_text) > MAX_QUOTE_LENGTH:
-        raise ValueError("Quote is too long")
+    if action != "quote":
+        raise ValueError("Invalid command")
+
+    quote_text = command_parts[1] if len(command_parts) > 1 else ""
+    quote_parts = quote_text.split(maxsplit=1)
 
     mode = VariantMode.NORMAL
-    if action == "uwu":
-        mode = VariantMode.UWU
-    elif action == "piglatin":
-        mode = VariantMode.PIGLATIN
+    if len(quote_parts) > 1 and quote_parts[0] in ["uwu", "piglatin"]:
+        mode_str, quote_text = quote_parts
+        if mode_str == "uwu":
+            mode = VariantMode.UWU
+        elif mode_str == "piglatin":
+            mode = VariantMode.PIGLATIN
+
+    # Removing the wrapping quotes
+    if (quote_text.startswith('"') and quote_text.endswith('"')) or (
+        quote_text.startswith("“") and quote_text.endswith("”")
+    ):
+        quote_text = quote_text[1:-1]
+
+    if len(quote_text) > MAX_QUOTE_LENGTH:
+        raise ValueError("Quote is too long")
 
     quote = Quote(quote_text, mode)
     transformed_quote = str(quote)
 
-    if action in ["uwu", "piglatin"]:
+    if action in ["quote"] and mode != VariantMode.NORMAL:
         if transformed_quote == quote_text:
             raise ValueError("Quote was not modified")
         if len(transformed_quote) > MAX_QUOTE_LENGTH:
+            warnings.warn("Quote too long, only partially transformed", Warning)
             transformed_quote = transformed_quote[:MAX_QUOTE_LENGTH]
-            raise ValueError("Quote too long, only partially transformed")
 
     try:
         Database.add_quote(quote)
