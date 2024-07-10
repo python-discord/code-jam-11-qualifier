@@ -31,6 +31,7 @@ class Quote:
         """
 
         if self.mode == VariantMode.UWU:
+            # Perform the L/l→W/w and R/r→W/w conversions first
             transformed = (
                 self.quote.replace("l", "w")
                 .replace("r", "w")
@@ -38,16 +39,32 @@ class Quote:
                 .replace("R", "W")
             )
 
-            words = transformed.split()
-            for i, word in enumerate(words):
-                if word.lower().startswith("u"):
-                    words[i] = f"{word[0]}-{word}"
-
-            transformed = " ".join(words)
-
+            # If the transformed quote too long, issue a warning; return it
             if len(transformed) > MAX_QUOTE_LENGTH:
                 warnings.warn("Quote too long, only partially transformed", Warning)
                 return transformed[:MAX_QUOTE_LENGTH]
+
+            # Perform the U/u "stutter" transformation only if the length allows
+            words = transformed.split()
+            stuttered_words = []
+            for i, word in enumerate(words):
+                if word.lower().startswith("u"):
+                    stuttered_word = f"{word[0]}-{word}"
+                    potential_length = len(
+                        " ".join(stuttered_words + [stuttered_word] + words[i + 1 :])
+                    )
+                    if potential_length <= MAX_QUOTE_LENGTH:
+                        stuttered_words.append(stuttered_word)
+                    else:
+                        stuttered_words.append(word)
+                        warnings.warn(
+                            "Quote too long, only partially transformed", Warning
+                        )
+                        break
+                else:
+                    stuttered_words.append(word)
+
+            transformed = " ".join(stuttered_words)
 
             if transformed == self.quote:
                 raise ValueError("Quote was not modified")
