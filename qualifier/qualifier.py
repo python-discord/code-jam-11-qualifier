@@ -141,7 +141,6 @@ def run_command(command: str) -> None:
 
     try:
         Database.add_quote(quote)
-        print(f"Added quote: {transformed_quote}")
     except DuplicateError:
         print("Quote has already been added previously")
 
