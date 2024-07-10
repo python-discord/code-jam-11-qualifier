@@ -1,6 +1,5 @@
 from enum import auto, StrEnum
 import warnings
-import sys
 
 MAX_QUOTE_LENGTH = 50
 
@@ -100,11 +99,6 @@ def run_command(command: str) -> None:
         raise ValueError("Invalid command")
 
     action = command_parts[0]
-    if action == "list":
-        quotes = Database.get_quotes()
-        for quote in quotes:
-            print(f"- {quote}")
-        return
 
     if action != "quote":
         raise ValueError("Invalid command")
@@ -120,6 +114,10 @@ def run_command(command: str) -> None:
         elif mode_str == "piglatin":
             mode = VariantMode.PIGLATIN
 
+    elif len(quote_parts) == 1 and quote_parts[0] in ["list"]:
+        quotes = Database.get_quotes()
+        for quote in quotes:
+            print(f"- {quote}")
     # Removing the wrapping quotes
     if (quote_text.startswith('"') and quote_text.endswith('"')) or (
         quote_text.startswith("“") and quote_text.endswith("”")
